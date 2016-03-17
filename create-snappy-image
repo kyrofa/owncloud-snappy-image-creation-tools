@@ -2,6 +2,21 @@
 #
 # A customized version of https://github.com/zyga/devtools/blob/master/ubuntu-image.
 
+verify_installed()
+{
+	package_name=$1
+	dpkg-query --show $1 > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		echo "Please install the $1 package"
+		exit 1
+	fi
+}
+
+# This script has some required packages. Print nice messages if they're
+# missing.
+verify_installed wget
+verify_installed kpartx
+
 version="0.8"
 
 image_kind=vanilla
@@ -20,7 +35,7 @@ os_url=
 udf_hash=d8acf6b199a0a73def00dd61302afc99718cee101ec0c8d2ef845168ca9b5820ed943e90f17a6d743ee368b2337f956765670f4128210dca7df71501035f7391
 udf_url=http://people.canonical.com/~mvo/all-snaps/ubuntu-device-flash
 kernel=canonical-pi2-linux.canonical
-gadget=canonical-pi2.canonical
+gadget=owncloud-pi2.kyrofa
 
 cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/ubuntu-image"
 
@@ -88,4 +103,4 @@ test -z "$gadget" && echo "BUG: no gadget snap for device: $device" && exit 2
 
 exec sudo "$udf" core rolling \
      --channel "$channel" --kernel "$kernel" --os "$os" --gadget "$gadget" \
-     --install owncloud.canonical -o "$device.img"
+     -o "$device.img"
